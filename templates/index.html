@@ -1,21 +1,27 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Todo App</title>
+   <title>Todo App</title>
 </head>
 <body>
-    <h1>My Todo App</h1>
-    <h2>This is the home page.</h2>
-    <input id="todo" placeholder="Enter a new todo"></input>
-    <button onclick="addTodo()"> Add </button>
-    <ul id="todoList"></ul>
+   <h1>My Todo App</h1>
+   <h2>This is the home page.</h2>
+   <input id="todo" placeholder="Enter a new todo"></input>
+   <button onclick="addTodo()"> Add </button>
+   <ul id="todoList"></ul>
 
 <script>
    async function addTodo(){
 
       const newTodo = document.getElementById("todo");
-      await fetch("/api/todos", {method: "POST", headers: {"content-type": "application/json"}, body: JSON.stringify({task: newTodo.value})});
+      await fetch("/api/todos/add", {method: "POST", headers: {"content-type": "application/json"}, body: JSON.stringify({task: newTodo.value})});
       newTodo.value = "";
+      updateTodos();
+
+   }
+   async function deleteTodo(id){
+
+      await fetch("/api/todos/delete", {method: "POST", headers: {"content-type": "application/json"}, body: JSON.stringify({task: id})});
       updateTodos();
 
    }
@@ -27,9 +33,23 @@
       const unorderedList = document.getElementById("todoList");
       unorderedList.innerHTML = ""
 
-      list.forEach(item => {
+      // For each item in the list
+      list.forEach((item, index) => {
+
+         // Creates the current list bullet
          const li = document.createElement("li");
-         li.textContent = item;
+         li.id = String(index)
+         li.textContent = item + " ";
+
+         // Creates each delete button
+         const button = document.createElement("button");
+         button.onclick = function(){
+            deleteTodo(index);
+         };
+         button.textContent = "Delete";
+         li.appendChild(button);
+
+         // Adds to the list
          unorderedList.appendChild(li);
       });
    }
