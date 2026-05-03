@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Todo App</title>
+</head>
+<body>
+    <h1>My Todo App</h1>
+    <h2>This is the home page.</h2>
+    <input id="todo" placeholder="Enter a new todo"></input>
+    <button onclick="addTodo()"> Add </button>
+    <ul id="todoList"></ul>
+
+<script>
+   async function addTodo(){
+
+      const newTodo = document.getElementById("todo");
+      await fetch("/api/todos", {method: "POST", headers: {"content-type": "application/json"}, body: JSON.stringify({task: newTodo.value})});
+      newTodo.value = "";
+      updateTodos();
+
+   }
+   async function updateTodos(){
+      
+      const data = await fetch("/api/todos", {method:"GET"});
+      const list = await data.json();
+
+      const unorderedList = document.getElementById("todoList");
+      unorderedList.innerHTML = ""
+
+      list.forEach(item => {
+         const li = document.createElement("li");
+         li.textContent = item;
+         unorderedList.appendChild(li);
+      });
+   }
+   updateTodos();
+</script>
+</body>
+</html>
